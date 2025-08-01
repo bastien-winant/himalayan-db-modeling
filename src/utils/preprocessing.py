@@ -2,7 +2,7 @@ from dbfread import DBF
 import pandas as pd
 import csv
 
-def read_dbf(dfb_file_path):
+def read_dbf(dfb_file_path: str) -> pd.DataFrame:
 	dbf = DBF(dfb_file_path)
 	df = pd.DataFrame(iter(dbf))
 
@@ -13,10 +13,10 @@ def read_dbf(dfb_file_path):
 
 	return df
 
-def float_to_int(s):
-	s = s.fillna(-1).astype(int).replace(-1, None)
+def float_to_int(s: pd.Series) -> pd.Series:
+	s = s.fillna(-999).astype(int).replace(-999, None)
 
 	return s
 
-def write_csv(df, csv_file_path):
+def write_csv(df: pd.DataFrame, csv_file_path: str) -> None:
 	df.to_csv(csv_file_path, index=False)
