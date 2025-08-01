@@ -13,5 +13,10 @@ def read_dbf(dfb_file_path):
 
 	return df
 
+def float_to_int(s):
+	s = s.fillna(-1).astype(int).replace(-1, None)
+
+	return s
+
 def write_csv(df, csv_file_path):
 	df.to_csv(csv_file_path, index=False)
