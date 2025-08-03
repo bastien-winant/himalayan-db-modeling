@@ -1,0 +1,7 @@
+You can now start the database server using:
+pg_ctl -D /Users/bastienwinant/Desktop/projects/himalayan-db-modeling/db_cluster -l logfile start
+OR
+postgres -D /Users/bastienwinant/Desktop/projects/himalayan-db-modeling/db_cluster > /Users/bastienwinant/Desktop/projects/himalayan-db-modeling/db_cluster/logile 2>&1 &
+
+Stop the database server using:
+pg_ctl stop -D /Users/bastienwinant/Desktop/projects/himalayan-db-modeling/db_cluster
