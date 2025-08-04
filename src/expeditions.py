@@ -62,3 +62,25 @@ df.drop(
 	 'route3', 'success3', 'ascent3', 'route4', 'success4', 'ascent4'],
 	axis=1, inplace=True
 )
+
+host_map = {
+	0: 'unknown',
+	1: 'Nepal',
+	2: 'China',
+	3: 'India'
+}
+
+df.loc[:, 'host_country'] = apply_map(df.host, host_map)
+df.drop('host', axis=1, inplace=True)
+df = update_country_list(df, 'host_country')
+
+df.nation = df.nation.str.split('/')
+df = df.explode('nation')
+df = update_country_list(df, 'nation')
+
+print(df.countries.unique())
+df.countries = df.countries.str.split(',')
+df = df.explode('countries')
+df.countries = df.countries.str.split('/')
+df = df.explode('countries')
+df = update_country_list(df, 'countries')

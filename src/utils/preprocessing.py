@@ -23,7 +23,7 @@ def apply_map(s: pd.Series, map: dict) -> pd.Series:
 
 def update_country_list(df, country_col):
 	df = df.copy()
-	df[country_col] = df[country_col].str.lower()
+	df[country_col] = df[country_col].str.lower().str.strip()
 
 	temp_df = df[[country_col]].drop_duplicates()
 	temp_df['country_list_name'] = temp_df[country_col]
@@ -41,7 +41,7 @@ def update_country_list(df, country_col):
 
 	df = df\
 		.merge(country_df, how="left", left_on=country_col, right_on='country_list_name')\
-		.rename({'country_list_id': f"{country_col}_id"})\
+		.rename({'country_list_id': f"{country_col}_id"}, axis=1)\
 		.drop([country_col, 'country_list_name'], axis=1)
 
 	country_df.drop('country_list_id', axis=1).to_csv('./data/processed/countries.csv', index=False)
