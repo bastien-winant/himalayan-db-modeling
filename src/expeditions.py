@@ -78,9 +78,10 @@ df.nation = df.nation.str.split('/')
 df = df.explode('nation')
 df = update_country_list(df, 'nation')
 
-print(df.countries.unique())
 df.countries = df.countries.str.split(',')
 df = df.explode('countries')
 df.countries = df.countries.str.split('/')
 df = df.explode('countries')
 df = update_country_list(df, 'countries')
+
+print(df.columns)
