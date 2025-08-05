@@ -23,7 +23,7 @@ def apply_map(s: pd.Series, map: dict) -> pd.Series:
 def update_country_list(df: pd.DataFrame, country_col: str) -> pd.DataFrame:
 	# filter and clean country names in the input df
 	df = df.loc[df[country_col].str.len() > 0, :]
-	df[country_col] = df[country_col].str.lower().str.strip()
+	df.loc[:, country_col] = df[country_col].str.lower().str.strip()
 
 	temp_df = df[[country_col]].drop_duplicates()
 	temp_df['country_list_name'] = temp_df[country_col]

@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 
 from .utils.preprocessing import *
 
@@ -84,4 +85,20 @@ df.countries = df.countries.str.split('/')
 df = df.explode('countries')
 df = update_country_list(df, 'countries')
 
-print(df.columns)
+df.drop(
+	['leaders', 'totmembers', 'smtmembers', 'mdeaths', 'tothired', 'smthired', 'hdeaths', 'nohired'],
+	axis=1, inplace=True
+)
+
+# SUMMIT/TERMINATION DATES
+df.bcdate = pd.to_datetime(df.bcdate)
+df.smtdate = pd.to_datetime(df.smtdate)
+df.termdate = pd.to_datetime(df.termdate)
+
+df.smtdays = df.smtdays.apply(lambda x: pd.Timedelta(days=x))
+df.totdays = df.totdays.apply(lambda x: pd.Timedelta(days=x))
+
+df.smtdate = df.smtdate.where(df.smtdate.notna(), df.bcdate + df.smtdays)
+df.termdate = df.termdate.where(df.termdate.notna(), df.bcdate + df.totdays)
+
+df.drop(['smtdays', 'totdays'], axis=1, inplace=True)
