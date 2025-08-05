@@ -6,9 +6,6 @@ import numpy as np
 
 from .utils.preprocessing import *
 
-# # Add parent directory to Python path
-# sys.path.append(str(Path().resolve().parent))
-
 # read in the raw data as a pandas dataframe
 df = read_dbf('./data/raw/exped.DBF')
 
@@ -86,9 +83,9 @@ df = df.explode('countries')
 df = update_country_list(df, 'countries')
 
 df.drop(
-	['leaders', 'totmembers', 'smtmembers', 'mdeaths', 'tothired', 'smthired', 'hdeaths', 'nohired'],
-	axis=1, inplace=True
-)
+	['leaders', 'totmembers', 'smtmembers', 'mdeaths', 'tothired', 'smthired', 'hdeaths', 'nohired',
+	 'o2used', 'o2none', 'o2climb', 'o2descent', 'o2sleep', 'o2medical', 'o2taken', 'o2unkwn'],
+	axis=1, inplace=True)
 
 # SUMMIT/TERMINATION DATES
 df.bcdate = pd.to_datetime(df.bcdate)
@@ -102,3 +99,5 @@ df.smtdate = df.smtdate.where(df.smtdate.notna(), df.bcdate + df.smtdays)
 df.termdate = df.termdate.where(df.termdate.notna(), df.bcdate + df.totdays)
 
 df.drop(['smtdays', 'totdays'], axis=1, inplace=True)
+
+print(df.columns)
