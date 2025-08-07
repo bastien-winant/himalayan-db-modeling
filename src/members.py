@@ -52,6 +52,50 @@ df_ascent_3 = df.loc[df.mroute3 > 0, :] \
 					 'msmtnote3': 'summit_note'}, axis=1)
 df_ascent_3['ascent_number'] = 3
 
-print(df.shape)
 df = pd.concat([df_ascent_0, df_ascent_1, df_ascent_2, df_ascent_3], ignore_index=True)
-print(df.shape)
+
+summit_note_map = {
+	0: "None",
+	1: "Flight-assisted ascent above BC",
+	2: "Flight-assisted descent above BC",
+	4: "Re-ascent from high camp"
+}
+df["summit_note"] = apply_map(df.summit_note, summit_note_map)
+
+summit_bid_map = {
+	0: "Unspecified",
+	1: "No summit bid",
+	2: "Aborted below high camp",
+	3: "Aborted at high camp",
+	4: "Aborted above high camp",
+	5: "Successful summit bid"
+}
+df["summit_bid_outcome"] = apply_map(df.msmtbid, summit_bid_map)
+df.drop('msmtbid', axis=1, inplace=True)
+
+summit_termination_map = {
+	0: 'Unspecified',
+	1: 'Success',
+	2: 'Success (subpeak, foresummit)',
+	3: 'Bad weather (storms, high winds)',
+	4: 'Bad conditions (deep snow, avalanches, falling rock/ice)',
+	5: 'Accident (death or injury to self or others) ',
+	6: 'Altitude (AMS symptoms, breathing or unwell)',
+	7: 'Exhaustion, fatigue, weakness or lack of motivation',
+	8: 'Frostbite, snowblindness or coldness',
+	9: 'Other illnesses or pains',
+	10: 'Lack of supplies, support or equipment problems ',
+	11: 'O2 system failure',
+	12: 'Route difficulty, intimidation or insufficient ability',
+	13: 'Too late in day or too slow',
+	14: 'Assisting, guiding, supporting or accompanying others',
+	15: 'Route/camp preparation or rope fixing',
+	16: 'Insufficient time left for expedition',
+	17: 'Did not climb or intent to summit',
+	18: 'Other',
+	19: 'Unknown'
+}
+df["summit_bid_termination"] = apply_map(df.msmtterm, summit_termination_map)
+df.drop('msmtterm', axis=1, inplace=True)
+
+print(df.columns)
