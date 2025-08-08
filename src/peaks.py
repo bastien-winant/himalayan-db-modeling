@@ -20,6 +20,6 @@ dim_local_names = dim_local_names.drop('pkname2', axis=1).explode('local_name')
 dim_local_names.local_name = dim_local_names.local_name.str.strip()
 dim_peak.drop(['pkname2'], axis=1, inplace=True)
 
-
+# apply mapping as per documentation
 dim_peak['himal'] = apply_map(dim_peak.himal, himal_map)
 dim_peak['region'] = apply_map(dim_peak.region, region_map)

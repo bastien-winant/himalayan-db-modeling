@@ -1,91 +1,64 @@
+from unittest.mock import inplace
+
 from .utils.preprocessing import *
 from .utils.maps import *
 
 # read in the raw data as a pandas dataframe
-df = read_dbf('./data/raw/exped.DBF')
+dim_exped = read_dbf('./data/raw/exped.DBF')
 
-# create expedition PK column
-df['id'] = df.expid.str.cat(df.year, sep='_')
-
-# ROUTES
-df_ascent_1 = df.loc[
-	df.route1.notna(),
-	['id', 'route1', 'success1', 'ascent1']
-].rename({
-	'route1': 'route_description',
-	'success1': 'success',
-	'ascent1': 'ascent'
-}, axis=1)
-df_ascent_1['number'] = 1
-
-df_ascent_2 = df.loc[
-	df.route2.notna(),
-	['id', 'route2', 'success2', 'ascent2']
-].rename({
-	'route2': 'route_description',
-	'success2': 'success',
-	'ascent2': 'ascent'
-}, axis=1)
-df_ascent_2['number'] = 2
-
-df_ascent_3 = df.loc[
-	df.route3.notna(),
-	['id', 'route3', 'success3', 'ascent3']
-].rename({
-	'route3': 'route_description',
-	'success3': 'success',
-	'ascent3': 'ascent'
-}, axis=1)
-df_ascent_3['number'] = 3
-
-df_ascent_4 = df.loc[
-	df.route4.notna(),
-	['id', 'route4', 'success4', 'ascent4']
-].rename({
-	'route4': 'route_description',
-	'success4': 'success',
-	'ascent4': 'ascent'
-}, axis=1)
-df_ascent_4['number'] = 4
-
-df_ascents = pd.concat([df_ascent_1, df_ascent_2, df_ascent_3, df_ascent_4], ignore_index=True)
-
-df.drop(
-	['route1', 'success1', 'ascent1', 'route2', 'success2', 'ascent2',
-	 'route3', 'success3', 'ascent3', 'route4', 'success4', 'ascent4'],
-	axis=1, inplace=True
-)
-
-df.loc[:, 'host_country'] = apply_map(df.host, host_map)
-df.drop('host', axis=1, inplace=True)
-df = update_country_list(df, 'host_country')
-
-df.nation = df.nation.str.split('/')
-df = df.explode('nation')
-df = update_country_list(df, 'nation')
-
-df.countries = df.countries.str.split(',')
-df = df.explode('countries')
-df.countries = df.countries.str.split('/')
-df = df.explode('countries')
-df = update_country_list(df, 'countries')
-
-df.drop(
-	['leaders', 'totmembers', 'smtmembers', 'mdeaths', 'tothired', 'smthired', 'hdeaths', 'nohired',
-	 'o2used', 'o2none', 'o2climb', 'o2descent', 'o2sleep', 'o2medical', 'o2taken', 'o2unkwn'],
-	axis=1, inplace=True)
+dim_exped['expedition_id'] = dim_exped.expid.str.cat(dim_exped.year, sep='_')
 
 # SUMMIT/TERMINATION DATES
-df.bcdate = pd.to_datetime(df.bcdate)
-df.smtdate = pd.to_datetime(df.smtdate)
-df.termdate = pd.to_datetime(df.termdate)
+dim_exped.bcdate = pd.to_datetime(dim_exped.bcdate)
+dim_exped.smtdate = pd.to_datetime(dim_exped.smtdate)
+dim_exped.termdate = pd.to_datetime(dim_exped.termdate)
 
-df.smtdays = df.smtdays.apply(lambda x: pd.Timedelta(days=x))
-df.totdays = df.totdays.apply(lambda x: pd.Timedelta(days=x))
+dim_exped.smtdays = dim_exped.smtdays.apply(lambda x: pd.Timedelta(days=x))
+dim_exped.totdays = dim_exped.totdays.apply(lambda x: pd.Timedelta(days=x))
 
-df.smtdate = df.smtdate.where(df.smtdate.notna(), df.bcdate + df.smtdays)
-df.termdate = df.termdate.where(df.termdate.notna(), df.bcdate + df.totdays)
+dim_exped.smtdate = dim_exped.smtdate.where(dim_exped.smtdate.notna(), dim_exped.bcdate + dim_exped.smtdays)
+dim_exped.termdate = dim_exped.termdate.where(dim_exped.termdate.notna(), dim_exped.bcdate + dim_exped.totdays)
 
-df.drop(['smtdays', 'totdays'], axis=1, inplace=True)
+dim_exped.drop(
+	['smtdays', 'totdays', 'totmembers', 'smtmembers', 'mdeaths', 'tothired', 'smthired', 'hdeaths', 'nohired'],
+	axis=1, inplace=True)
 
-print(df.columns)
+dim_exped['termination_reason'] = apply_map(dim_exped.termreason, exped_termination_map)
+dim_exped.drop('termreason', axis=1, inplace=True)
+
+dim_exped.host = apply_map(dim_exped.host, exped_host_map)
+
+# ROUTES
+dim_route_1 = dim_exped.loc[
+	dim_exped.route1.notna() | dim_exped.success1.notna() | dim_exped.ascent1.notna(),
+	['expedition_id', 'route1', 'success1', 'ascent1']]\
+	.drop_duplicates()\
+	.rename({'route1': 'description', 'success1': 'success', 'ascent1': 'ascent_numbers'}, axis=1)
+dim_route_1['number'] = 1
+
+dim_route_2 = dim_exped.loc[
+	dim_exped.route2.notna() | dim_exped.success2.notna() | dim_exped.ascent2.notna(),
+	['expedition_id', 'route2', 'success2', 'ascent2']]\
+	.drop_duplicates()\
+	.rename({'route2': 'description', 'success2': 'success', 'ascent2': 'ascent_numbers'}, axis=1)
+dim_route_2['number'] = 2
+
+dim_route_3 = dim_exped.loc[
+	dim_exped.route3.notna() | dim_exped.success3.notna() | dim_exped.ascent3.notna(),
+	['expedition_id', 'route3', 'success3', 'ascent3']]\
+	.drop_duplicates()\
+	.rename({'route3': 'description', 'success3': 'success', 'ascent3': 'ascent_numbers'}, axis=1)
+dim_route_3['number'] = 3
+
+dim_route_4 = dim_exped.loc[
+	dim_exped.route4.notna() | dim_exped.success4.notna() | dim_exped.ascent4.notna(),
+	['expedition_id', 'route4', 'success4', 'ascent4']]\
+	.drop_duplicates()\
+	.rename({'route4': 'description', 'success4': 'success', 'ascent4': 'ascent_numbers'}, axis=1)
+dim_route_4['number'] = 4
+
+dim_route = pd.concat([dim_route_1, dim_route_2, dim_route_3, dim_route_4], ignore_index=True)
+
+dim_exped.drop(
+	['route1', 'success1', 'ascent1', 'route2', 'success2', 'ascent2', 'route3', 'success3', 'ascent3',
+	 'route4', 'success4', 'ascent4'], axis=1, inplace=True)
