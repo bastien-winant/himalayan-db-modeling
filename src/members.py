@@ -54,22 +54,7 @@ df_ascent_3['ascent_number'] = 3
 
 df = pd.concat([df_ascent_0, df_ascent_1, df_ascent_2, df_ascent_3], ignore_index=True)
 
-summit_note_map = {
-	0: "None",
-	1: "Flight-assisted ascent above BC",
-	2: "Flight-assisted descent above BC",
-	4: "Re-ascent from high camp"
-}
 df["summit_note"] = apply_map(df.summit_note, summit_note_map)
-
-summit_bid_map = {
-	0: "Unspecified",
-	1: "No summit bid",
-	2: "Aborted below high camp",
-	3: "Aborted at high camp",
-	4: "Aborted above high camp",
-	5: "Successful summit bid"
-}
 df["summit_bid_outcome"] = apply_map(df.msmtbid, summit_bid_map)
 df.drop('msmtbid', axis=1, inplace=True)
 
