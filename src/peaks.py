@@ -35,4 +35,6 @@ dim_peak.drop('phost', axis=1, inplace=True)
 # atomise the semicolumn-separated country names
 dim_peak_country.host = dim_peak_country.host.str.split(';')
 dim_peak_country = dim_peak_country.explode('host')
-update_country_list(dim_peak_country, 'host')
+dim_peak_country = update_country_list(dim_peak_country, 'host')
+
+print(dim_peak_country.head())

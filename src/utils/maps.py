@@ -108,3 +108,31 @@ exped_termination_map = {
 	13: "Attempt rumored",
 	14: "Other"
 }
+
+# MEMBER MAPPINGS
+death_type_map = {
+	0: "Unspecified",
+	1: "AMS (acute mtn sickness)",
+	2: "Exhaustion",
+	3: "Exposure / frostbite",
+	4: "Fall",
+	5: "Crevasse",
+	6: "Icefall collapse",
+	7: "Avalanche",
+	8: "Falling rock / ice",
+	9: "Disappearance (unexplained)",
+	10: "Illness (non-AMS)",
+	11: "Other",
+	12: "Unknown"
+}
+
+death_class_map = {
+	0: "Unspecified",
+	1: "Death enroute BC",
+	2: "Death at BC / ABC",
+	3: "Route preparation",
+	4: "Ascending in summit bid",
+	5: "Descending from summit bid",
+	6: "Expedition evacuation",
+	7: "Other / Unknown"
+}
