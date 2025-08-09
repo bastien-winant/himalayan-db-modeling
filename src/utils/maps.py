@@ -1,3 +1,4 @@
+# PEAK MAPPINGS
 region_map = {
 	0: "Unclassified",
 	1: "Kangchenjunga-Janak",
@@ -31,6 +32,16 @@ himal_map = {
 	18: "Peri",
 	19: "Rolwaling",
 	20: "Saipal"
+}
+
+host_map = {
+	0: 'Unclassified',
+	1: 'Nepal',
+	2: 'China',
+	3: 'India',
+	4: 'Nepal;China',
+	5: 'Nepal;India',
+	6: 'Nepal;China;India'
 }
 
 summit_note_map = {
