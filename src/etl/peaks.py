@@ -22,19 +22,24 @@ dim_local_names = dim_local_names.drop('pkname2', axis=1).explode('local_name')
 dim_local_names.local_name = dim_local_names.local_name.str.strip()
 dim_peak.drop(['pkname2'], axis=1, inplace=True)
 
+dim_local_names.to_csv("./data/processed/peak_local_names.csv", index=False)
+
 # apply mapping as per documentation
 dim_peak['himal'] = apply_map(dim_peak.himal, himal_map)
 dim_peak['region'] = apply_map(dim_peak.region, region_map)
 
 # normalised peak-country table
 dim_peak_country = dim_peak[['peakid', 'phost']]
+
 # apply the mapping as per the documentation and remove id columns
 dim_peak_country['host'] = apply_map(dim_peak_country.phost, host_map)
 dim_peak_country.drop('phost', axis=1, inplace=True)
 dim_peak.drop('phost', axis=1, inplace=True)
+
 # atomise the semicolumn-separated country names
 dim_peak_country.host = dim_peak_country.host.str.split(';')
 dim_peak_country = dim_peak_country.explode('host')
 dim_peak_country = update_country_list(dim_peak_country, 'host')
 
-print(dim_peak_country.head())
+dim_peak_country.to_csv("./data/processed/dim_peak_country.csv", index=False)
+dim_peak.to_csv("./data/processed/dim_peak.csv", index=False)

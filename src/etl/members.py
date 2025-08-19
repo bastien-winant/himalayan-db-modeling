@@ -59,4 +59,4 @@ fact_ascent.drop('msmtterm', axis=1, inplace=True)
 
 fact_ascent['deathtype'] = apply_map(fact_ascent.deathtype, death_type_map)
 fact_ascent['deathclass'] = apply_map(fact_ascent.deathclass, death_class_map)
-fact_ascent['injurytype'] = apply_map(fact_ascent.injurytype, death_type_map)
+fact_ascent['injurytype'] = apply_map(fact_ascent.injurytype, death_type_map) 
