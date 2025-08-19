@@ -1,7 +1,6 @@
-from unittest.mock import inplace
-
 from .utils.preprocessing import *
 from .utils.maps import *
+pd.options.mode.chained_assignment = None
 
 # read in the raw data as a pandas dataframe
 dim_exped = read_dbf('./data/raw/exped.DBF')
@@ -20,8 +19,8 @@ dim_exped.smtdate = dim_exped.smtdate.where(dim_exped.smtdate.notna(), dim_exped
 dim_exped.termdate = dim_exped.termdate.where(dim_exped.termdate.notna(), dim_exped.bcdate + dim_exped.totdays)
 
 dim_exped.drop(
-	['smtdays', 'totdays', 'totmembers', 'smtmembers', 'mdeaths', 'tothired', 'smthired', 'hdeaths', 'nohired'],
-	axis=1, inplace=True)
+	['smtdays', 'totdays', 'totmembers', 'smtmembers', 'mdeaths', 'tothired', 'smthired', 'hdeaths', 'nohired',
+	 'leaders'], axis=1, inplace=True)
 
 dim_exped['termination_reason'] = apply_map(dim_exped.termreason, exped_termination_map)
 dim_exped.drop('termreason', axis=1, inplace=True)
@@ -62,3 +61,27 @@ dim_route = pd.concat([dim_route_1, dim_route_2, dim_route_3, dim_route_4], igno
 dim_exped.drop(
 	['route1', 'success1', 'ascent1', 'route2', 'success2', 'ascent2', 'route3', 'success3', 'ascent3',
 	 'route4', 'success4', 'ascent4'], axis=1, inplace=True)
+
+dim_exped_country = dim_exped[['expedition_id', 'countries']]
+dim_exped_country.loc[:, 'countries'] = dim_exped_country.countries.str.split("/")
+dim_exped_country = dim_exped_country.explode('countries')
+
+# expedition countries
+dim_exped_country.loc[:, 'countries'] = dim_exped_country.countries.str.split(",")
+dim_exped_country = dim_exped_country.explode('countries')
+dim_exped_country = update_country_list(dim_exped_country, 'countries')
+dim_exped.drop('countries', axis=1, inplace=True)
+
+# expedition nations
+dim_exped_nation = dim_exped[['expedition_id', 'nation']]
+dim_exped_nation.loc[:, 'nation'] = dim_exped_nation.nation.str.split("/")
+dim_exped_nation = dim_exped_nation.explode('nation')
+dim_exped_nation = update_country_list(dim_exped_nation, 'nation')
+dim_exped.drop('nation', axis=1, inplace=True)
+
+dim_route.to_csv("./data/processed/dim_route.csv", index=False)
+dim_exped_country.to_csv("./data/processed/dim_expedition_country.csv", index=False)
+dim_exped_nation.to_csv("./data/processed/dim_expedition_nation.csv", index=False)
+dim_exped.to_csv("./data/processed/dim_expedition.csv", index=False)
+
+print(dim_exped_nation.head())

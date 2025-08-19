@@ -1,5 +1,6 @@
 from .utils.preprocessing import *
 from .utils.maps import *
+pd.options.mode.chained_assignment = None
 
 # read in the raw data as a pandas dataframe
 df = read_dbf('./data/raw/members.DBF')
@@ -59,4 +60,7 @@ fact_ascent.drop('msmtterm', axis=1, inplace=True)
 
 fact_ascent['deathtype'] = apply_map(fact_ascent.deathtype, death_type_map)
 fact_ascent['deathclass'] = apply_map(fact_ascent.deathclass, death_class_map)
-fact_ascent['injurytype'] = apply_map(fact_ascent.injurytype, death_type_map) 
+fact_ascent['injurytype'] = apply_map(fact_ascent.injurytype, death_type_map)
+
+dim_climber_df.to_csv("./data/processed/dim_climber.csv", index=False)
+fact_ascent.to_csv("./data/processed/fact_ascent.csv", index=False)
